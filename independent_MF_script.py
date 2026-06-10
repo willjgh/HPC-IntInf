@@ -9,43 +9,6 @@ from SDP_interaction_inference.dataset import SparseDataset
 import pandas as pd
 import numpy as np
 import anndata as ad
-import json
-
-# ------------------------------------------------------------------------------
-# Functions
-# ------------------------------------------------------------------------------
-
-def construct_dataset(mirna_sample, mrna_dataset, beta, resamples):
-
-    # size
-    cells, gene_pairs = mrna_dataset.shape
-
-    # construct paired count dataframe
-    counts_df = pd.DataFrame(
-        index = [f"Gene-pair-{i}" for i in range(gene_pairs)],
-        columns = [f"Cell-{j}" for j in range(cells)]
-    )
-
-    # fill with pairs
-    for i in range(gene_pairs):
-        gene_i = mirna_sample[:, 0]
-        gene_j = mrna_dataset[:, i]
-        gene_pair_ij = list(zip(gene_i, gene_j))
-        counts_df.iloc[i] = gene_pair_ij
-
-    # construct dataset object
-    data = Dataset()
-    data.count_dataset = counts_df
-    data.cells = cells
-    data.gene_pairs = gene_pairs
-
-    # settings
-    data.resamples = resamples
-
-    # set capture
-    data.beta = beta
-
-    return data
 
 # ------------------------------------------------------------------------------
 # Arguments
@@ -80,13 +43,13 @@ args = parser.parse_args()
 # ------------------------------------------------------------------------------
 
 # load pcRNA
-adata_pcRNA = ad.read_h5ad("TotalX_HEK293T_pcRNA.h5ad")
+adata_pcRNA = ad.read_h5ad("../Data/TotalX_HEK293T_pcRNA.h5ad")
 
 # load miRNA
-adata_miRNA = ad.read_h5ad("TotalX_HEK293T_miRNA.h5ad")
+adata_miRNA = ad.read_h5ad("../Data/TotalX_HEK293T_miRNA.h5ad")
 
 # load capture
-beta = np.loadtxt("TotalX_HEK293T_capture.txt")
+beta = np.loadtxt("../Data/TotalX_HEK293T_capture.txt")
 
 # names
 pcRNA_names = adata_pcRNA.var['GeneName'].tolist()[:100] # restrict for testing
@@ -151,4 +114,4 @@ for res in args.results:
     result_df[f'{miRNA_name}_d{args.d}_c{int(args.confidence * 100)}_{res}'] = res_list
 
 # write results
-result_df.to_csv(f"ind_MF_{args.array_index}.csv")
+result_df.to_csv(f"../Results/ind_MF_{args.array_index}.csv")
