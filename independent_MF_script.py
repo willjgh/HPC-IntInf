@@ -52,7 +52,7 @@ adata_miRNA = ad.read_h5ad("../Data/TotalX_HEK293T_miRNA.h5ad")
 beta = np.loadtxt("../Data/TotalX_HEK293T_capture.txt")
 
 # names
-pcRNA_names = adata_pcRNA.var['GeneName'].tolist()[:100] # restrict for testing
+pcRNA_names = adata_pcRNA.var['GeneName'].tolist()
 miRNA_name = adata_miRNA.var['GeneName'].iloc[args.array_index]
 
 # ------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ dataset_SDP = SparseDataset()
 # construct dataset of miRNA paired with mRNA
 dataset_SDP.construct_dataset(
     adata_miRNA[:, args.array_index],
-    adata_pcRNA[:, :100], # restrict for testing
+    adata_pcRNA,
     beta
 )
 
